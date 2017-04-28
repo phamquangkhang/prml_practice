@@ -41,12 +41,13 @@ class Sigmoid:
 
 class Affine:
     def __init__(self, W, b):
+        #W: weights vector, b: bias or weight at x0 = 1
         self.W =W
         self.b = b
         
         self.x = None
         self.original_x_shape = None
-        # 重み・バイアスパラメータの微分
+        # Deriviation of weight and bias
         self.dW = None
         self.db = None
 
@@ -104,7 +105,7 @@ class Dropout:
 
     def forward(self, x, train_flg=True):
         if train_flg:
-            self.mask = np.random.rand(*x.shape) > self.dropout_ratio
+            self.mask = np.random.rand(*x.shape) > self.dropout_ratiom
             return x * self.mask
         else:
             return x * (1.0 - self.dropout_ratio)
@@ -121,7 +122,7 @@ class BatchNormalization:
         self.gamma = gamma
         self.beta = beta
         self.momentum = momentum
-        self.input_shape = None # Conv層の場合は4次元、全結合層の場合は2次元  
+        self.input_shape = None # Conv layer: dimesion = 4, others: dimension = 2
 
         # テスト時に使用する平均と分散
         self.running_mean = running_mean
