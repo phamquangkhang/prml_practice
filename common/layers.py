@@ -3,6 +3,8 @@ import numpy as np
 from common.functions import *
 from common.util import im2col, col2im
 
+#All layers used in Neural Network.
+#Layers are designed with forward and backward function for generic call
 
 class Relu:
     def __init__(self):
@@ -70,8 +72,8 @@ class Affine:
 class SoftmaxWithLoss:
     def __init__(self):
         self.loss = None
-        self.y = None # softmaxの出力
-        self.t = None # 教師データ
+        self.y = None # softmax output
+        self.t = None # known labels
 
     def forward(self, x, t):
         self.t = t
@@ -82,7 +84,7 @@ class SoftmaxWithLoss:
 
     def backward(self, dout=1):
         batch_size = self.t.shape[0]
-        if self.t.size == self.y.size: # 教師データがone-hot-vectorの場合
+        if self.t.size == self.y.size: # when known labels is one-hot-vector
             dx = (self.y - self.t) / batch_size
         else:
             dx = self.y.copy()

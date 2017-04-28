@@ -1,5 +1,6 @@
 # coding: utf-8
 import numpy as np
+#all numerical gradient function to directly calculate gradient for numerical checking
 
 def _numerical_gradient_1d(f, x):
     h = 1e-4 # 0.0001
@@ -32,6 +33,10 @@ def numerical_gradient_2d(f, X):
 
 
 def numerical_gradient(f, x):
+    """Numerical gradient for gradient checking
+    with h = 1e-4, the gradient of function f at x is:
+        (f(x+h) - f(x-h))/2*h
+    """
     h = 1e-4 # 0.0001
     grad = np.zeros_like(x)
     
