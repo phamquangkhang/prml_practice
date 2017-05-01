@@ -1,4 +1,5 @@
 # coding: utf-8
+# Source from https://github.com/oreilly-japan/deep-learning-from-scratch
 import numpy as np
 
 

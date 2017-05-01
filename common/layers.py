@@ -1,4 +1,5 @@
 # coding: utf-8
+# Source from https://github.com/oreilly-japan/deep-learning-from-scratch
 import numpy as np
 from common.function import *
 from common.util import im2col, col2im
@@ -105,7 +106,7 @@ class Dropout:
 
     def forward(self, x, train_flg=True):
         if train_flg:
-            self.mask = np.random.rand(*x.shape) > self.dropout_ratiom
+            self.mask = np.random.rand(*x.shape) > self.dropout_ratio
             return x * self.mask
         else:
             return x * (1.0 - self.dropout_ratio)

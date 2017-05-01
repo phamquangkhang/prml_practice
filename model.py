@@ -1,3 +1,5 @@
+# coding: utf-8
+# Source from https://github.com/oreilly-japan/deep-learning-from-scratch
 import sys, os
 sys.path.append(os.pardir)
 import numpy as np
@@ -21,7 +23,7 @@ class Model:
 		self.weight_decay_lambda = weight_decay_lambda
 
         #Initialize all weight:
-		self.__init_weight(weight_init_std)
+		self.__init_weight(weight_init_std, activation)
         #Create layers based on the hidden_size_list
 		activation_functions = {"sigmoid": Sigmoid, "Relu": Relu}
 		self.layers = OrderedDict()
@@ -44,7 +46,7 @@ class Model:
 		self.layers["Affine" + str(idx)] = Affine(self.weights["W" + str(idx)], self.weights["b" + str(idx)])
 
 		self.last_layer = SoftmaxWithLoss()
-	def __init_weight(self, weight_init_std):
+	def __init_weight(self, weight_init_std, activation):
 		"""Initialize weights
 		Parameters:
 			weight_init_std: standard deviation of gaussian distribution for weight N(0, weight_init_std^2) default is 0.01
@@ -128,5 +130,5 @@ class Model:
 			grads["b" + str(i)] = self.layers["Affine" + str(i)].db
 			if self.use_batchnorm and i != self.hidden_layer_num + 1:
 				grads["gamma" + str(i)] = self.layers["BatchNorm" + str(i)].dgamma
-				grads["beta" + str(i)] = self.layers["beta" + str(i)].dbeta
+				grads["beta" + str(i)] = self.layers["BatchNorm" + str(i)].dbeta
 		return grads
