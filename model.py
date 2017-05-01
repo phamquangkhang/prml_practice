@@ -22,22 +22,22 @@ class Model:
 		self.use_dropout = use_dropout
 		self.weight_decay_lambda = weight_decay_lambda
 
-        #Initialize all weight:
+    	#Initialize all weight:
 		self.__init_weight(weight_init_std, activation)
-        #Create layers based on the hidden_size_list
+    	#Create layers based on the hidden_size_list
 		activation_functions = {"sigmoid": Sigmoid, "Relu": Relu}
 		self.layers = OrderedDict()
 		for i in range(1, self.hidden_layer_num + 1):
-            #Create Affine layer transpose(W) * X + b
+			#Create Affine layer transpose(W) * X + b
 			self.layers["Affine" + str(i)] = Affine(self.weights["W" + str(i)], self.weights["b" + str(i)])
 
-            #Create batch normalization layer for each hidden layer
+			#Create batch normalization layer for each hidden layer
 			if self.use_batchnorm:
 				self.weights["gamma" + str(i)] = np.ones(hidden_size_list[i - 1])
 				self.weights["beta" + str(i)] = np.zeros(hidden_size_list[i - 1])
 				self.layers["BatchNorm" + str(i)] = BatchNormalization(self.weights["gamma" + str(i)], self.weights["beta" + str(i)])
 
-            #Activation
+			#Activation
 			self.layers["Activation_function" + str(i)] = activation_functions[activation]()
 
 			if self.use_dropout:
@@ -111,10 +111,10 @@ class Model:
 		At other layers: dW at affine layer is transpose(x).dot(dout)
 		weights is update
 		"""
-    	#Forward to all layers
+		#Forward to all layers
 		self.loss(x, t, train_flg=True)
 
-    	#Error back propagation
+		#Error back propagation
 		dout = 1
 		dout = self.last_layer.backward(dout)
 
@@ -124,7 +124,7 @@ class Model:
 			dout = layer.backward(dout)
 
 		grads = {}
-    	#calculate gradients
+		#calculate gradients
 		for i in range(1, self.hidden_layer_num + 2):
 			grads["W" + str(i)] = self.layers["Affine" + str(i)].dW + self.weight_decay_lambda * self.weights["W" + str(i)]
 			grads["b" + str(i)] = self.layers["Affine" + str(i)].db
