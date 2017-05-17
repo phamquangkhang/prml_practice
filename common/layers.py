@@ -206,12 +206,12 @@ class Convolution:
         self.stride = stride
         self.pad = pad
         
-        # 中間データ（backward時に使用）
+        # saved data for backward
         self.x = None   
         self.col = None
         self.col_W = None
         
-        # 重み・バイアスパラメータの勾配
+        # Weights and bias
         self.dW = None
         self.db = None
 
@@ -221,6 +221,7 @@ class Convolution:
         out_h = 1 + int((H + 2*self.pad - FH) / self.stride)
         out_w = 1 + int((W + 2*self.pad - FW) / self.stride)
 
+        # transfer image data (4 dimensions) into 1 col
         col = im2col(x, FH, FW, self.stride, self.pad)
         col_W = self.W.reshape(FN, -1).T
 
@@ -242,6 +243,7 @@ class Convolution:
         self.dW = self.dW.transpose(1, 0).reshape(FN, C, FH, FW)
 
         dcol = np.dot(dout, self.col_W.T)
+        # back the col data to image
         dx = col2im(dcol, self.x.shape, FH, FW, self.stride, self.pad)
 
         return dx
