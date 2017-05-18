@@ -20,35 +20,35 @@ class SimpleCnn:
 	weight_init_std: standard deviation for weight initialize (e.g: 0.01)
 	"""
 	def __init__(self, input_dim=(1, 28, 28), conv_param={'filter_num':30, 'filter_size':5, 'pad':0, 'stride':1},
-				hidden_size=100, ouput_size=10, weight_init_std=0.01):
+				hidden_size=100, output_size=10, weight_init_std=0.01):
 		filter_num = conv_param['filter_num']
 		filter_size = conv_param['filter_size']
 		filter_pad = conv_param['pad']
 		filter_stride = conv_param['stride']
 		input_size = input_dim[1]
 		conv_output_size = (input_size - filter_size + 2*filter_pad) / filter_stride + 1
-		pool_ouput_size = int(filter_num * (conv_output_size/2) * (conv_output_size/2))
+		pool_output_size = int(filter_num * (conv_output_size/2) * (conv_output_size/2))
 
 		#initialize weights
-		self.params = {}
-		self.params['W1'] = weight_init_std * np.random.randn(filter_num, input_dim[0], filter_size, filter_size)
-		self.params['b1'] = np.zeros(filter_num)
+		self.weights = {}
+		self.weights['W1'] = weight_init_std * np.random.randn(filter_num, input_dim[0], filter_size, filter_size)
+		self.weights['b1'] = np.zeros(filter_num)
 
-		self.params['W2'] = weight_init_std * np.random.randn(pool_ouput_size, hidden_size)
-		self.params['b2'] = np.zeros(hidden_size)
+		self.weights['W2'] = weight_init_std * np.random.randn(pool_output_size, hidden_size)
+		self.weights['b2'] = np.zeros(hidden_size)
 
-		self.params['W2'] = weight_init_std * np.random.randn(hidden_size, ouput_size)
-		self.params['b2'] = np.zeros(output_size)
+		self.weights['W3'] = weight_init_std * np.random.randn(hidden_size, output_size)
+		self.weights['b3'] = np.zeros(output_size)
 
 		#generate layers
 		self.layers = OrderedDict()
-		self.layers['Conv1'] = Convolution(self.params['W1'], self.params['b1'],
+		self.layers['Conv1'] = Convolution(self.weights['W1'], self.weights['b1'],
 											conv_param['stride'], conv_param['pad'])
 		self.layers['Relu1'] = Relu()
 		self.layers['Pool1'] = Pooling(pool_h=2, pool_w=2, stride=2)
-		self.layers['Affine1'] = Affine(self.params['W2'], self.params['b2'])
+		self.layers['Affine1'] = Affine(self.weights['W2'], self.weights['b2'])
 		self.layers['Relu2'] = Relu()
-		self.layers['Affine2'] = Affine(self.params['W3'], self.params['b3'])
+		self.layers['Affine2'] = Affine(self.weights['W3'], self.weights['b3'])
 
 		self.last_layer = SoftmaxWithLoss()
 
@@ -101,23 +101,23 @@ class SimpleCnn:
 		#setup
 		grads = {}
 		grads['W1'], grads['b1'] = self.layers['Conv1'].dW, self.layers['Conv1'].db
-        grads['W2'], grads['b2'] = self.layers['Affine1'].dW, self.layers['Affine1'].db
-        grads['W3'], grads['b3'] = self.layers['Affine2'].dW, self.layers['Affine2'].db
+		grads['W2'], grads['b2'] = self.layers['Affine1'].dW, self.layers['Affine1'].db
+		grads['W3'], grads['b3'] = self.layers['Affine2'].dW, self.layers['Affine2'].db
 
-        return grads
+		return grads
 
-    def save_params(self, file_name="params.pkl"):
-    	params = {}
-    	for key, val in self.params.items():
-    		params[key] = val
-    	with open(file_name, 'wb') as f:
-    		pickle.dump(params, f)
-    def load_params(self, file_name="params.pkl"):
-    	with open(file_name, 'rb') as f:
-    		params = pickle.load(f)
-    	with key, val in params.items():
-    		self.params[key] = val
-		for i, key enumerate(['Conv1', 'Affine1', 'Affine2']):
-			self.layers[key].W = self.params['W' + str(i+1)]
-			self.layers[key].b = self.params['b' + str(i+1)]
+	def save_params(self, file_name="params.pkl"):
+		weights = {}
+		for key, val in self.weights.items():
+			weights[key] = val
+		with open(file_name, 'wb') as f:
+			pickle.dump(weights, f)
+	def load_params(self, file_name="params.pkl"):
+		with open(file_name, 'rb') as f:
+			weights = pickle.load(f)
+		with key, val in weights.items():
+			self.weights[key] = val
+		for i, key in enumerate(['Conv1', 'Affine1', 'Affine2']):
+			self.layers[key].W = self.weights['W' + str(i+1)]
+			self.layers[key].b = self.weights['b' + str(i+1)]
 		
